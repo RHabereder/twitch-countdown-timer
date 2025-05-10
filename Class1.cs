@@ -35,10 +35,7 @@ public class CPHInline: CPHInlineBase
         if(timeInSeconds > 0)
         {
             ShowCountdown(timeInSeconds);
-        } else
-        {
-            ShowCountdown(300);
-        }
+        } 
             
         return true;
     }
@@ -60,29 +57,34 @@ public class CPHInline: CPHInlineBase
         CPH.ObsSetSourceVisibility(alertNesterScene, alertSource, true);
         if (countdownInSeconds > 0)
         {
-            int timeToAdd = CPH.GetGlobalVar<int>("timeToAdd", true);
-            if (timeToAdd != 0)
-            {
-                countdownInSeconds += timeToAdd;
-                CPH.LogDebug($"Adding {timeToAdd} seconds to Timer now");
-                CPH.SetGlobalVar("timeToAdd", 0, true);
-                CPH.SetGlobalVar("timeInSeconds", countdownInSeconds, true);
-            }
-            // Refetch every cycle to check for updates due to donos / commands            
-            int hours = countdownInSeconds / 3600;
-            int minutes = (countdownInSeconds - (hours * 3600)) / 60;
-            int seconds = (countdownInSeconds - (hours * 3600)) - (minutes * 60);
-
-            CPH.ObsSetGdiText(alertNesterScene, alertSource, $"{countdownPrefix} {hours:D2}:{minutes:D2}:{seconds:D2}");
+            UpdateTimerLabel(countdownInSeconds, alertNesterScene, alertSource, countdownPrefix);
             CPH.SetGlobalVar("timeToAdd", -1, true);
             CPH.Wait(1000);
-            
-            CPH.RunAction("CountdownTimer", false);                    
+
+            CPH.RunAction("CountdownTimer", false);
         }
         else
         {
             CPH.ObsSetSourceVisibility(alertNesterScene, alertSource, false);
         }
+    }
+
+    private void UpdateTimerLabel(int countdownInSeconds, string alertNesterScene, string alertSource, string countdownPrefix)
+    {
+        int timeToAdd = CPH.GetGlobalVar<int>("timeToAdd", true);
+        if (timeToAdd != 0)
+        {
+            countdownInSeconds += timeToAdd;
+            CPH.LogDebug($"Adding {timeToAdd} seconds to Timer now");
+            CPH.SetGlobalVar("timeToAdd", 0, true);
+            CPH.SetGlobalVar("timeInSeconds", countdownInSeconds, true);
+        }
+        // Refetch every cycle to check for updates due to donos / commands            
+        int hours = countdownInSeconds / 3600;
+        int minutes = (countdownInSeconds - (hours * 3600)) / 60;
+        int seconds = (countdownInSeconds - (hours * 3600)) - (minutes * 60);
+
+        CPH.ObsSetGdiText(alertNesterScene, alertSource, $"{countdownPrefix} {hours:D2}:{minutes:D2}:{seconds:D2}");
     }
 
     /// <summary>
