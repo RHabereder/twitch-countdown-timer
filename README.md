@@ -38,7 +38,11 @@ In a future version I want to add a "Seconds per Sub" as well, so you can use th
 #### CountdownTimer
 
 This Action is the one that will start the timer. **It should only be started once!**
-Either you start it via the Test-Trigger that I put in, or you add a different trigger like `Twitch -> Channel -> Stream Online` if you want the timer to automatically start on going live.
+It is a recursive action that will call itself after every second, until the counter reaches 0. 
+So if you start it twice, it will count down twice as fast. 
+
+Either you start it via the Test-Trigger that I put in, or you add a different trigger.
+I would recommend something like like `Twitch -> Channel -> Stream Online` if you want the timer to automatically start on going live.
 
 
 #### Pause Timer
@@ -54,6 +58,6 @@ This Action will resume the timer queue and thereby the timer. It is called by t
 
 With this action you can set your Timer. Since it works in seconds, you will have to do a bit of math if you want to set it to something like 20 Hours or so.
 
-#### [TwitchCOuntdownTimer] \* Code
+#### [TwitchCountdownTimer] \* Code
 
 This is the Code for the whole thing, play with this only if you know what you are doing
