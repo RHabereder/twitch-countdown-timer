@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{38727383-E064-4D62-A31C-2891A3BE3074}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TwitchCountdownTimer</RootNamespace>
+    <AssemblyName>TwitchCountdownTimer</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Streamer.bot.Auth">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Auth.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.Common">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.CrowdControl">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.CrowdControl.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.DonorDrive">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.DonorDrive.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.Elgato">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Elgato.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.EmoteHandlers">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.EmoteHandlers.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.HypeRate">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.HypeRate.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.Meld.Studio">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Meld.Studio.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.Mtion">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Mtion.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.Pally.gg">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Pally.gg.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.Plugin.Interface">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Plugin.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.PolyPop">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.PolyPop.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.Pulsoid">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Pulsoid.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.StreamElements">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.StreamElements.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.Streamlabs">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Streamlabs.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.ThrowingSystem">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.ThrowingSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.TipeeeStream">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.TipeeeStream.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.TreatStream">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.TreatStream.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.Trovo">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Trovo.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.VoiceMod">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.VoiceMod.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.VTubeStudio">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.VTubeStudio.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.Website">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.Website.dll</HintPath>
+    </Reference>
+    <Reference Include="Streamer.bot.YouTube">
+      <HintPath>..\..\Streamer.bot-x64-0.2.6\Streamer.bot.YouTube.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
