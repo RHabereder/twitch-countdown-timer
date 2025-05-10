@@ -34,6 +34,7 @@ This command will enable your mods, or yourself, to resume the timer.
 
 This Action adds time to the current timer. In the Sub-Action you can configure how many seconds per Dollar should be added to the timer. 
 In a future version I want to add a "Seconds per Sub" as well, so you can use this timer for a Subathon as well. 
+Per default, it has a Streamelements trigger, since that was the intended platform that was used for this project. 
 
 #### CountdownTimer
 
@@ -48,7 +49,6 @@ I would recommend something like like `Twitch -> Channel -> Stream Online` if yo
 #### Pause Timer
 
 This Action will pause the timer queue and thereby the timer. It is called by the !pauseTimer Command
-
 
 #### Resume Timer
 
