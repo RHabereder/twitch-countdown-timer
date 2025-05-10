@@ -3,6 +3,11 @@ using System;
 
 public class CPHInline: CPHInlineBase
 {
+    /// <summary>
+    ///     Streamerbot Action that adds Time to a timer
+    ///     If secondsPerDollar is not defined, it will default to 30 seconds per Dollar
+    /// </summary>
+    /// <returns></returns>
     public bool AddTimeToTimer()
     {
         if(!CPH.TryGetArg<int>("secondsPerDollar", out int secondsPerDollar))
@@ -20,7 +25,11 @@ public class CPHInline: CPHInlineBase
         return true;
     }
 
-    public bool ShowCounter()
+    /// <summary>
+    ///     Streamerbot action that starts the timer
+    /// </summary>
+    /// <returns></returns>
+    public bool StartTimer()
     {
         int timeInSeconds = CPH.GetGlobalVar<int>("timeInSeconds", true);
         if(timeInSeconds > 0)
@@ -34,13 +43,20 @@ public class CPHInline: CPHInlineBase
         return true;
     }
 
+    /// <summary>
+    ///     Private Utility-Method that handles the state and actual Time Arithmetic, as well as decreasing the time
+    ///     It is a recursive method that will keep calling the Streamerbot Action "CountdownTimer", until the timer reaches 0
+    ///     It relies on the args "scene" and "label" to find the correct OBS Label to set
+    ///     If you want a prefix to your countdown, you can use the "countdownPrefix" Argument, which is "Countdown :" by default
+    /// </summary>
+    /// <param name="countdownInSeconds"></param>
     private void ShowCountdown(int countdownInSeconds)
     {
         CPH.TryGetArg<String>("scene", out string alertNesterScene);
         CPH.TryGetArg<String>("label", out string alertSource);
+        CPH.TryGetArg<String>("countdownPrefix", out string countdownPrefix);
         CPH.SetGlobalVar("timeInSeconds", countdownInSeconds, true);
-        
-        
+
         CPH.ObsSetSourceVisibility(alertNesterScene, alertSource, true);
         if (countdownInSeconds > 0)
         {
@@ -57,11 +73,11 @@ public class CPHInline: CPHInlineBase
             int minutes = (countdownInSeconds - (hours * 3600)) / 60;
             int seconds = (countdownInSeconds - (hours * 3600)) - (minutes * 60);
 
-            CPH.ObsSetGdiText(alertNesterScene, alertSource, $"Countdown: {hours:D2}:{minutes:D2}:{seconds:D2}");
+            CPH.ObsSetGdiText(alertNesterScene, alertSource, $"{countdownPrefix} {hours:D2}:{minutes:D2}:{seconds:D2}");
             CPH.SetGlobalVar("timeToAdd", -1, true);
             CPH.Wait(1000);
             
-            CPH.RunAction("PattoTimer", false);                    
+            CPH.RunAction("CountdownTimer", false);                    
         }
         else
         {
@@ -69,15 +85,23 @@ public class CPHInline: CPHInlineBase
         }
     }
 
+    /// <summary>
+    ///     Streamerbot Action to pause the TimerQueue
+    /// </summary>
+    /// <returns></returns>
     public bool PauseTimer()
     {
-        CPH.PauseActionQueue("TimerQueue");
+        CPH.PauseActionQueue("CountdownTimerQueue");
         return true;
     }
 
+    /// <summary>
+    ///     Streamerbot Action to resume the TimerQueue
+    /// </summary>
+    /// <returns></returns>
     public bool ResumeTimer()
     {
-        CPH.ResumeActionQueue("TimerQueue");
+        CPH.ResumeActionQueue("CountdownTimerQueue");
         return true;
     }
 }

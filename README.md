@@ -1,0 +1,59 @@
+# Twitch Countdown Timer
+
+This project is a Countdown Timer that you can use for several things. It originally was made for a Donothon, but can be easily adapted to anything really.
+
+## Code
+
+Import this string into Streamerbot: 
+
+```
+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
+```
+
+You will get the following things with this:
+
+### Queues
+
+#### TimerQueue
+
+The TimerQueue is a non-blocking queue that the commands are running on. For the simple reason that it is the most convenient way to pause and resume the timer
+
+### Commands
+
+#### Pause Timer
+
+This command will enable your mods, or yourself, to pause the timer. 
+
+#### Resume Timer
+
+This command will enable your mods, or yourself, to resume the timer. 
+
+### Actions
+
+#### AddTime
+
+This Action adds time to the current timer. In the Sub-Action you can configure how many seconds per Dollar should be added to the timer. 
+In a future version I want to add a "Seconds per Sub" as well, so you can use this timer for a Subathon as well. 
+
+#### CountdownTimer
+
+This Action is the one that will start the timer. **It should only be started once!**
+Either you start it via the Test-Trigger that I put in, or you add a different trigger like `Twitch -> Channel -> Stream Online` if you want the timer to automatically start on going live.
+
+
+#### Pause Timer
+
+This Action will pause the timer queue and thereby the timer. It is called by the !pauseTimer Command
+
+
+#### Resume Timer
+
+This Action will resume the timer queue and thereby the timer. It is called by the !pauseTimer Command
+
+#### SetTimer
+
+With this action you can set your Timer. Since it works in seconds, you will have to do a bit of math if you want to set it to something like 20 Hours or so.
+
+#### [TwitchCOuntdownTimer] \* Code
+
+This is the Code for the whole thing, play with this only if you know what you are doing
