@@ -1,4 +1,5 @@
-﻿using Streamer.bot.Plugin.Interface;
+﻿using Streamer.bot.Common.Events;
+using Streamer.bot.Plugin.Interface;
 using System;
 
 public class CPHInline: CPHInlineBase
@@ -10,17 +11,85 @@ public class CPHInline: CPHInlineBase
     /// <returns></returns>
     public bool AddTimeToTimer()
     {
+        // Set sensible Defaults
         if(!CPH.TryGetArg<int>("secondsPerDollar", out int secondsPerDollar))
         {
             secondsPerDollar = 30;
         }
-
-        if (CPH.TryGetArg<int>("tipAmount", out int donationInDollar))
+        if (!CPH.TryGetArg<int>("secondsPerHundredBits", out int secondsPerHundredBits))
         {
-            int newTime = (donationInDollar * secondsPerDollar);
-            CPH.LogDebug($"Calculated additional time for Donation of ${donationInDollar}");
-            CPH.LogDebug($"Setting timeToAdd to {newTime} now");
-            CPH.SetGlobalVar("timeToAdd", newTime, true);
+            secondsPerHundredBits = 30;
+        }
+        if (!CPH.TryGetArg<int>("secondsPerSubscriptionPrime", out int secondsPerSubscriptionPrime))
+        {
+            secondsPerSubscriptionPrime = 150;
+        }
+        if (!CPH.TryGetArg<int>("secondsPerSubscriptionT1", out int secondsPerSubscriptionT1))
+        {
+            secondsPerSubscriptionT1 = 150;
+        }
+        if (!CPH.TryGetArg<int>("secondsPerSubscriptionT2", out int secondsPerSubscriptionT2))
+        {
+            secondsPerSubscriptionT2 = 250;
+        }
+        if (!CPH.TryGetArg<int>("secondsPerSubscriptionT3", out int secondsPerSubscriptionT3))
+        {
+            secondsPerSubscriptionT3 = 500;
+        }
+
+        int timeAdded = 0;
+        // Find out the trigger and translate it to seconds
+        EventType evt = CPH.GetEventType();
+        switch (evt)
+        {
+            case EventType.TwitchSub:
+                CPH.LogDebug("Triggered by Sub");
+                
+                // Find out more about the sub
+                CPH.TryGetArg<string>("tier", out string tier);
+                switch(tier)
+                {
+                    case "prime":
+                        timeAdded = secondsPerSubscriptionPrime;
+                        break;
+                    case "tier 1":
+                        timeAdded = secondsPerSubscriptionT2;
+                        break;
+                    case "tier 2":
+                        timeAdded = secondsPerSubscriptionT2;
+                        break;
+                    case "tier 3":
+                        timeAdded = secondsPerSubscriptionT3;
+                        break;
+                }
+                break;
+            case EventType.TwitchCheer:
+                CPH.LogDebug("Triggered by Bits");
+                CPH.TryGetArg<int>("bits", out int bits);
+                CPH.LogDebug($"got {bits} bits in event");
+                float secondsPerBit = (float)secondsPerHundredBits / 100;
+                CPH.LogDebug($"calculated {secondsPerBit} secondsPerBit");
+                timeAdded = (int)Math.Floor(new decimal((float)bits * secondsPerBit));
+                break;
+            case EventType.StreamElementsTip:
+                CPH.TryGetArg<int>("tipAmount", out int donationInDollar);
+                timeAdded = (donationInDollar * secondsPerDollar);
+                CPH.LogDebug("Triggered by Tip");
+                break;
+        }
+
+
+        if (timeAdded > 0)
+        {
+            int oldTime = CPH.GetGlobalVar<int>("timeToAdd", true);
+            CPH.LogDebug($"Calculated {timeAdded} additional seconds for {evt}");
+            if(oldTime != 0)
+            {
+                CPH.LogDebug($"Adding remnant of unadded {oldTime} on top of {timeAdded}");
+                timeAdded += oldTime;
+            }
+            CPH.LogDebug($"Setting timeToAdd to {timeAdded} now");
+            CPH.SetGlobalVar("timeToAdd", timeAdded, true);
         }
         return true;
     }
