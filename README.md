@@ -52,7 +52,7 @@ This Action will pause the timer queue and thereby the timer. It is called by th
 
 #### Resume Timer
 
-This Action will resume the timer queue and thereby the timer. It is called by the !pauseTimer Command
+This Action will resume the timer queue and thereby the timer. It is called by the !resumeTimer Command
 
 #### SetTimer
 
