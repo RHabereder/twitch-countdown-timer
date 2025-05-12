@@ -99,6 +99,13 @@ public class CPHInline: CPHInlineBase
             CPH.LogDebug($"Setting timeToAdd to {timeAdded} now");
             CPH.SetGlobalVar("timeToAdd", timeAdded, true);
         }
+
+        UpdateTimerLabel(
+            CPH.GetGlobalVar<int>("timeInSeconds", true),
+            CPH.GetGlobalVar<String>("scene", true),
+            CPH.GetGlobalVar<String>("label", true),
+            CPH.GetGlobalVar<String>("countdownPrefix", true));
+
         return true;
     }
 
@@ -126,9 +133,9 @@ public class CPHInline: CPHInlineBase
     /// <param name="countdownInSeconds"></param>
     private void ShowCountdown(int countdownInSeconds)
     {
-        CPH.TryGetArg<String>("scene", out string alertNesterScene);
-        CPH.TryGetArg<String>("label", out string alertSource);
-        CPH.TryGetArg<String>("countdownPrefix", out string countdownPrefix);
+        string alertNesterScene = CPH.GetGlobalVar<String>("scene", true);
+        string alertSource = CPH.GetGlobalVar<String>("label", true);
+        string countdownPrefix = CPH.GetGlobalVar<String>("countdownPrefix", true);
         CPH.SetGlobalVar("timeInSeconds", countdownInSeconds, true);
 
         CPH.ObsSetSourceVisibility(alertNesterScene, alertSource, true);
