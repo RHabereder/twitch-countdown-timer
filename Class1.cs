@@ -38,43 +38,51 @@ public class CPHInline: CPHInlineBase
         }
 
         int timeAdded = 0;
+        int amountOfSubs = 1;
+        
         // Find out the trigger and translate it to seconds
         EventType evt = CPH.GetEventType();
+        CPH.LogDebug($"Triggered by {evt}");
         switch (evt)
         {
             case EventType.TwitchSub:
-                CPH.LogDebug("Triggered by Sub");
-                
-                // Find out more about the sub
+            case EventType.TwitchGiftBomb:
+                if(CPH.TryGetArg<int>("gifts", out int gifts))
+                {
+                    amountOfSubs = gifts;
+                }
+                CPH.LogDebug("Triggered by evt");
+
+                // Find out more about the sub/gift bomb
                 CPH.TryGetArg<string>("tier", out string tier);
                 switch(tier)
                 {
                     case "prime":
-                        timeAdded = secondsPerSubscriptionPrime;
+                        timeAdded = secondsPerSubscriptionPrime * amountOfSubs;
                         break;
                     case "tier 1":
-                        timeAdded = secondsPerSubscriptionT2;
+                        timeAdded = secondsPerSubscriptionT1 * amountOfSubs;
                         break;
                     case "tier 2":
-                        timeAdded = secondsPerSubscriptionT2;
+                        timeAdded = secondsPerSubscriptionT2 * amountOfSubs;
                         break;
                     case "tier 3":
-                        timeAdded = secondsPerSubscriptionT3;
+                        timeAdded = secondsPerSubscriptionT3 * amountOfSubs;
                         break;
                 }
+                CPH.LogDebug($"Calculated additional {timeAdded} seconds for {amountOfSubs} * {tier} subs!");
                 break;
             case EventType.TwitchCheer:
-                CPH.LogDebug("Triggered by Bits");
                 CPH.TryGetArg<int>("bits", out int bits);
-                CPH.LogDebug($"got {bits} bits in event");
                 float secondsPerBit = (float)secondsPerHundredBits / 100;
                 CPH.LogDebug($"calculated {secondsPerBit} secondsPerBit");
                 timeAdded = (int)Math.Floor(new decimal((float)bits * secondsPerBit));
+                CPH.LogDebug($"Calculated additional {timeAdded} seconds for Cheer of {bits} bits");
                 break;
             case EventType.StreamElementsTip:
                 CPH.TryGetArg<int>("tipAmount", out int donationInDollar);
                 timeAdded = (donationInDollar * secondsPerDollar);
-                CPH.LogDebug("Triggered by Tip");
+                CPH.LogDebug($"Calculated additional {timeAdded} seconds for Tip of {donationInDollar}");
                 break;
         }
 
@@ -83,7 +91,7 @@ public class CPHInline: CPHInlineBase
         {
             int oldTime = CPH.GetGlobalVar<int>("timeToAdd", true);
             CPH.LogDebug($"Calculated {timeAdded} additional seconds for {evt}");
-            if(oldTime != 0)
+            if(oldTime > 0)
             {
                 CPH.LogDebug($"Adding remnant of unadded {oldTime} on top of {timeAdded}");
                 timeAdded += oldTime;
