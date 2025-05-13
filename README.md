@@ -62,7 +62,7 @@ Per default, it considers a Streamelements Tip, Twitch-Subs, and Twitch-Cheers/B
 
 #### AddTimeViaCommand
 
-This action adds Time to the current timer via a command as described in #add-time
+This action adds Time to the current timer via a command as described in [Add Time](#add-time)
 
 #### CountdownTimer
 
