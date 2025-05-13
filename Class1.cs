@@ -1,9 +1,156 @@
 ﻿using Streamer.bot.Common.Events;
 using Streamer.bot.Plugin.Interface;
 using System;
+using System.Collections.Generic;
 
 public class CPHInline: CPHInlineBase
 {
+
+    readonly List<String> timeKeywords = new List<String>() 
+    { 
+        "hours",
+        "hrs",
+        "h",
+        "minutes",
+        "mins",
+        "m",
+        "seconds",
+        "secs",
+        "s",
+    };
+
+    /// <summary>
+    ///     Streamerbot Action that can be called on command to translate a string into an amount of time 
+    ///     that can be fed into AddTimeToTimer to extend the timer. 
+    ///     Currently the streamer has to use the SetTime method, which is cumbersome to just add an amount of time. 
+    ///     This should make it much more convenient
+    ///     Supported Syntax:
+    ///     !addTime 00:01:00 
+    ///     !addTime X minutes
+    ///     !addTime X mins
+    ///     !addTime X m
+    ///     !addTime X seconds
+    ///     !addTime X secs
+    ///     !addTime X s
+    ///     !addTime X hours
+    ///     !addTime X hrs
+    ///     !addTime X h
+    /// </summary>
+    /// <returns></returns>
+    public bool CommandAddTime()
+    {
+        int timeAdded = 0;
+        string argument = "";
+        if (args["rawInputEscaped"] != null)
+        {
+            argument = args["rawInputEscaped"].ToString();
+            CPH.LogDebug($"Received argument {argument}");
+            string[] tokens = argument.Split(' ');
+
+            // It's probably a XX:XX:XX token in this case
+            if (tokens.Length == 1)
+            {
+                CPH.LogDebug($"Only found one token {tokens[0]}, suspecting TimeString of Format hh:mm:ss");
+                if (tokens[0].Split(':').Length == 3)
+                {
+                    // We need to remove leading zeroes, just in case
+                    string hoursPosition = RemoveLeadingZero(tokens[0].Split(':')[0]);
+                    string minutePosition = RemoveLeadingZero(tokens[0].Split(':')[1]);
+                    string secondPosition = RemoveLeadingZero(tokens[0].Split(':')[2]);                    
+                    Int32.TryParse(hoursPosition, out int hours);
+                    Int32.TryParse(minutePosition, out int minutes);
+                    Int32.TryParse(secondPosition, out int seconds);
+                    CPH.LogDebug($"Extracted {hours} Hours, {minutes} Minutes and {seconds} seconds from argument {argument}");
+
+                    timeAdded += (hours * 3600) + (minutes * 60) + seconds;
+                    CPH.LogDebug($"Calculated additional {timeAdded} seconds from argument {argument}");
+                }
+            }
+            //If we have more than 1 token, it's probably a long string
+            else if (tokens.Length > 1)
+            {
+                int multiplier = 0;
+                int value = 0;
+                foreach (string t in tokens)
+                {
+                    // First we sanitize the token
+                    string token = t.ToLower().Trim();
+
+                    // If the token is in our timeKeyWords, it is a valid time unit we can use
+                    // We now set the multiplayer for the actual time to add
+                    if (timeKeywords.Contains(token))
+                    {
+                        switch (token)
+                        {
+                            case "hours":
+                            case "hrs":
+                            case "h":
+                                multiplier = 3600;
+                                break;
+                            case "minutes":
+                            case "mins":
+                            case "m":
+                                multiplier = 60;
+                                break;
+                            case "seconds":
+                            case "secs":
+                            case "s":
+                                multiplier = 1;
+                                break;
+                        }
+                    }
+                    // If it is a parseable string, we can calulate the time added, as it should happen after we got our unit
+                    else 
+                    {                        
+                        value = Int32.Parse(token);
+                    }
+
+                    // Just in case we check that the multiplayer is not 0
+                    if(multiplier != 0 && value != 0 )
+                    {
+                        timeAdded += value * multiplier;
+                        // Reset multiplayer now
+                        multiplier = 0;
+                        value = 0;
+                    }
+                    
+                }
+            }
+
+            if (timeAdded == 0)
+            {
+                if (CPH.TryGetArg("msgId", out string messageId))
+                {
+                    CPH.LogDebug($"0 Time Added after iterating through all tokens, this should not happen");
+                    CPH.TwitchReplyToMessage($"Something went wrong, this should not happen. Please contact the developer with logfiles to get this fixed.", messageId, true, true);
+                }
+            }
+            // Add the time to the state
+            AddTimeToGlobalVar(timeAdded, EventType.CommandTriggered);
+            UpdateTimerLabel(
+                CPH.GetGlobalVar<int>("timeInSeconds", true),
+                CPH.GetGlobalVar<String>("scene", true),
+                CPH.GetGlobalVar<String>("label", true),
+                CPH.GetGlobalVar<String>("countdownPrefix", true));
+        }
+        return true;
+    }
+
+    /// <summary>
+    ///     Utility Method to remove a possible leading zero from Timestrings like 01:02:01
+    /// </summary>
+    /// <param name="hoursPosition"></param>
+    /// <returns></returns>
+    private string RemoveLeadingZero(string hoursPosition)
+    {
+        if (hoursPosition.StartsWith("0"))
+        {
+            hoursPosition = hoursPosition.Remove(0, 1);
+        }
+
+        return hoursPosition;
+    }
+
     /// <summary>
     ///     Streamerbot Action that adds Time to a timer
     ///     If secondsPerDollar is not defined, it will default to 30 seconds per Dollar
@@ -89,15 +236,7 @@ public class CPHInline: CPHInlineBase
 
         if (timeAdded > 0)
         {
-            int oldTime = CPH.GetGlobalVar<int>("timeToAdd", true);
-            CPH.LogDebug($"Calculated {timeAdded} additional seconds for {evt}");
-            if(oldTime > 0)
-            {
-                CPH.LogDebug($"Adding remnant of unadded {oldTime} on top of {timeAdded}");
-                timeAdded += oldTime;
-            }
-            CPH.LogDebug($"Setting timeToAdd to {timeAdded} now");
-            CPH.SetGlobalVar("timeToAdd", timeAdded, true);
+            AddTimeToGlobalVar(timeAdded, evt);
         }
 
         UpdateTimerLabel(
@@ -107,6 +246,26 @@ public class CPHInline: CPHInlineBase
             CPH.GetGlobalVar<String>("countdownPrefix", true));
 
         return true;
+    }
+
+    /// <summary>
+    ///     Extracted Helper-Method to handle the State of the timeAdded var
+    /// </summary>
+    /// <param name="timeAdded"></param>
+    /// <param name="evt"></param>
+    /// <returns></returns>
+    private int AddTimeToGlobalVar(int timeAdded, EventType evt)
+    {
+        int oldTime = CPH.GetGlobalVar<int>("timeToAdd", true);
+        CPH.LogDebug($"Calculated {timeAdded} additional seconds for {evt}");
+        if (oldTime > 0)
+        {
+            CPH.LogDebug($"Adding remnant of unadded {oldTime} on top of {timeAdded}");
+            timeAdded += oldTime;
+        }
+        CPH.LogDebug($"Setting timeToAdd to {timeAdded} now");
+        CPH.SetGlobalVar("timeToAdd", timeAdded, true);
+        return timeAdded;
     }
 
     /// <summary>
@@ -153,6 +312,13 @@ public class CPHInline: CPHInlineBase
         }
     }
 
+    /// <summary>
+    ///     Extracted Helper Method to update the Text(GDI+) Label
+    /// </summary>
+    /// <param name="countdownInSeconds"></param>
+    /// <param name="alertNesterScene"></param>
+    /// <param name="alertSource"></param>
+    /// <param name="countdownPrefix"></param>
     private void UpdateTimerLabel(int countdownInSeconds, string alertNesterScene, string alertSource, string countdownPrefix)
     {
         int timeToAdd = CPH.GetGlobalVar<int>("timeToAdd", true);
